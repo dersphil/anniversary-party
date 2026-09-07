@@ -77,9 +77,13 @@ export class GameScene extends Phaser.Scene {
         if (player.id !== this.socketManager.socket.id) this.addOtherPlayer(player);
       });
       this.updateRoomStatus(`ROOM ${this.roomCode}`);
-      this.roomPanel.style.display = "none";
       this.chatInput.style.display = "block";
       this.showRoomCodeBadge();
+      if (data.created) {
+        this.showCreatedRoomScreen();
+      } else {
+        this.roomPanel.style.display = "none";
+      }
     });
     this.socketManager.socket.on("roomError", (message: string) => this.updateRoomStatus(message));
     this.socketManager.socket.on("playerJoined", (player: NetworkPlayer) => this.addOtherPlayer(player));
@@ -132,6 +136,8 @@ export class GameScene extends Phaser.Scene {
       .quiz-options button, .room-action { cursor: pointer; border: 2px solid #db5a9b; padding: 12px 14px; color: #fff6fb; background: #2e2850; font: 14px monospace; }
       .quiz-options button:hover, .room-action:hover { background: #db5a9b; color: #251d36; }
       .quiz-popup { margin-top: 18px; padding: 14px 18px; border: 2px solid #67e8e4; background: #182c43; color: #fff6fb; }
+      .created-room-code { margin: 12px 0; color: #67e8e4; font-size: clamp(38px, 10vw, 76px); font-weight: bold; letter-spacing: 8px; text-shadow: 4px 4px #342051; }
+      .room-instruction { margin-bottom: 18px; }
       .room-fields { display: grid; gap: 10px; width: min(360px, 90vw); }
       .room-fields input { box-sizing: border-box; width: 100%; padding: 12px; border: 2px solid #67e8e4; background: #fff6fb; color: #251d36; font: 16px monospace; }
       .room-actions { display: flex; gap: 10px; justify-content: center; }
@@ -239,6 +245,15 @@ export class GameScene extends Phaser.Scene {
       window.setTimeout(() => { button.textContent = "Copy"; }, 1500);
     });
     document.body.appendChild(badge);
+  }
+
+  private showCreatedRoomScreen() {
+    const content = this.roomPanel.querySelector<HTMLDivElement>("#quiz-content")!;
+    content.innerHTML = `<div class="quiz-question">Your private room is ready.</div><div class="created-room-code">${this.roomCode}</div><div class="quiz-question room-instruction">Send this code to Maria so she can join.</div><button id="enter-rooftop" class="room-action">Enter rooftop</button>`;
+    this.roomPanel.style.display = "flex";
+    content.querySelector("#enter-rooftop")!.addEventListener("click", () => {
+      this.roomPanel.style.display = "none";
+    });
   }
 
   private createChatUI() {
