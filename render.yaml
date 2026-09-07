@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: anniversary-party-server
+    runtime: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+  - type: static
+    name: anniversary-party-client
+    rootDir: client
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_SERVER_URL
+        value: https://anniversary-party-server.onrender.com
