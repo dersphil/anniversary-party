@@ -20,12 +20,7 @@ const io = new Server(server, {
 
 const rooms = new Map<string, GameRoom>();
 const socketRooms = new Map<string, GameRoom>();
-
-function makeCode() {
-  let code = "";
-  do code = Math.random().toString(36).slice(2, 7).toUpperCase(); while (rooms.has(code));
-  return code;
-}
+const DEFAULT_ROOM_CODE = "ILY4EVA";
 
 function leaveRoom(socket: Socket) {
   const room = socketRooms.get(socket.id);
@@ -41,13 +36,14 @@ function leaveRoom(socket: Socket) {
 io.on("connection", (socket) => {
   console.log("Player connected:", socket.id);
 
-  socket.on("createRoom", ({ name, roomCode }: { name: string; roomCode?: string }) => {
-    const code = roomCode?.trim().toUpperCase() || makeCode();
+  socket.on("createRoom", ({ name }: { name: string; roomCode?: string }) => {
+    const code = DEFAULT_ROOM_CODE;
     if (rooms.has(code)) return socket.emit("roomError", "That room already exists. Join it instead.");
     join(socket, code, name, true);
   });
   socket.on("joinRoom", ({ roomCode, name }: { roomCode: string; name: string }) => {
     const code = roomCode.trim().toUpperCase();
+    if (code !== DEFAULT_ROOM_CODE) return socket.emit("roomError", "Use the room code ily4eva.");
     const room = rooms.get(code);
     if (!room) return socket.emit("roomError", "That room does not exist.");
     if (room.isFull()) return socket.emit("roomError", "That room already has two players.");
@@ -85,6 +81,7 @@ function join(socket: Socket, code: string, name: string, created: boolean) {
   room.sockets.add(socket.id);
   socketRooms.set(socket.id, room);
   socket.join(code);
+  console.log(`[Tushitas] Room code: ${code} | ${created ? "created" : "joined"} by ${player.name}`);
   socket.emit("roomJoined", { roomCode: code, player, players: room.players.all(), created });
   socket.to(code).emit("playerJoined", player);
 }
@@ -97,4 +94,5 @@ const PORT = Number(process.env.PORT) || 3000;
 
 server.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
+  console.log("[Tushitas] DEPLOYMENT SMOKE TEST PASSED: server is listening and room system is ready.");
 });

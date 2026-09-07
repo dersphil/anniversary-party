@@ -66,6 +66,7 @@ export class GameScene extends Phaser.Scene {
   private setupNetworking() {
     this.socketManager.socket.on("roomJoined", (data: { roomCode: string; player: NetworkPlayer; players: Record<string, NetworkPlayer>; created: boolean }) => {
       this.roomCode = data.roomCode;
+      console.info(`[Tushitas] Room code: ${this.roomCode}`);
       this.ready = true;
       this.player = new Player(
         this,
@@ -194,7 +195,7 @@ export class GameScene extends Phaser.Scene {
 
   private showRoomFields() {
     const content = this.roomPanel.querySelector<HTMLDivElement>("#quiz-content")!;
-    content.innerHTML = `<div class="quiz-question">Okay, you're cleared for the rooftop.</div><div class="room-fields"><input id="player-name" placeholder="Your name" maxlength="20"><input id="room-code" value="${DEFAULT_ROOM_CODE}" placeholder="Room code to join" maxlength="12"><div class="room-actions"><button id="join-room" class="room-action">Join room</button><button id="create-room" class="room-action">Create room</button></div><span id="room-status">Your default room is ${DEFAULT_ROOM_CODE}.</span></div>`;
+    content.innerHTML = `<div class="quiz-question">Okay, you're cleared for the rooftop.</div><div class="room-fields"><input id="player-name" placeholder="Your name" maxlength="20"><input id="room-code" value="${DEFAULT_ROOM_CODE}" maxlength="${DEFAULT_ROOM_CODE.length}" readonly aria-label="Room code"><div class="room-actions"><button id="join-room" class="room-action">Join room</button><button id="create-room" class="room-action">Create room</button></div><span id="room-status">Your room code is ${DEFAULT_ROOM_CODE}.</span></div>`;
     const name = content.querySelector<HTMLInputElement>("#player-name")!;
     const roomCode = content.querySelector<HTMLInputElement>("#room-code")!;
     content.querySelector("#join-room")!.addEventListener("click", () => {
