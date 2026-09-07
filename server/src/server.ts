@@ -20,7 +20,7 @@ const io = new Server(server, {
 
 const rooms = new Map<string, GameRoom>();
 const socketRooms = new Map<string, GameRoom>();
-const DEFAULT_ROOM_CODE = "ILY4EVA";
+const DEFAULT_ROOM_CODE = "ILYMJ";
 
 function leaveRoom(socket: Socket) {
   const room = socketRooms.get(socket.id);
@@ -43,7 +43,7 @@ io.on("connection", (socket) => {
   });
   socket.on("joinRoom", ({ roomCode, name }: { roomCode: string; name: string }) => {
     const code = roomCode.trim().toUpperCase();
-    if (code !== DEFAULT_ROOM_CODE) return socket.emit("roomError", "Use the room code ily4eva.");
+    if (code !== DEFAULT_ROOM_CODE) return socket.emit("roomError", "Use the room code ilymj.");
     const room = rooms.get(code);
     if (!room) return socket.emit("roomError", "That room does not exist.");
     if (room.isFull()) return socket.emit("roomError", "That room already has two players.");
