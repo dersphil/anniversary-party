@@ -195,7 +195,7 @@ export class GameScene extends Phaser.Scene {
 
   private showRoomFields() {
     const content = this.roomPanel.querySelector<HTMLDivElement>("#quiz-content")!;
-    content.innerHTML = `<div class="quiz-question">Okay, you're cleared for the rooftop.</div><div class="room-fields"><input id="player-name" placeholder="Your name" maxlength="20"><input id="room-code" value="${DEFAULT_ROOM_CODE}" maxlength="${DEFAULT_ROOM_CODE.length}" readonly aria-label="Room code"><div class="room-actions"><button id="join-room" class="room-action">Join room</button><button id="create-room" class="room-action">Create room</button></div><span id="room-status">Your room code is ${DEFAULT_ROOM_CODE}.</span></div>`;
+    content.innerHTML = `<div class="quiz-question">Okay, you're cleared for the rooftop.</div><div class="room-fields"><input id="player-name" placeholder="Your name" maxlength="20"><input id="room-code" value="${DEFAULT_ROOM_CODE}" maxlength="${DEFAULT_ROOM_CODE.length}" minlength="${DEFAULT_ROOM_CODE.length}" aria-label="Room code" autocomplete="off"><div class="room-actions"><button id="join-room" class="room-action">Join room</button><button id="create-room" class="room-action">Create room</button></div><span id="room-status">Your room code is ${DEFAULT_ROOM_CODE}.</span></div>`;
     const name = content.querySelector<HTMLInputElement>("#player-name")!;
     const roomCode = content.querySelector<HTMLInputElement>("#room-code")!;
     content.querySelector("#join-room")!.addEventListener("click", () => {
