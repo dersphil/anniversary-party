@@ -6,3 +6,4 @@ export const SERVER_URL = import.meta.env.VITE_SERVER_URL || "https://anniversar
 export const PLAYER_SPEED = 180;
 
 export const ROOM_CODE_LENGTH = 5;
+export const DEFAULT_ROOM_CODE = "ily4eva";

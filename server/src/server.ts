@@ -41,7 +41,11 @@ function leaveRoom(socket: Socket) {
 io.on("connection", (socket) => {
   console.log("Player connected:", socket.id);
 
-  socket.on("createRoom", ({ name }: { name: string }) => join(socket, makeCode(), name, true));
+  socket.on("createRoom", ({ name, roomCode }: { name: string; roomCode?: string }) => {
+    const code = roomCode?.trim().toUpperCase() || makeCode();
+    if (rooms.has(code)) return socket.emit("roomError", "That room already exists. Join it instead.");
+    join(socket, code, name, true);
+  });
   socket.on("joinRoom", ({ roomCode, name }: { roomCode: string; name: string }) => {
     const code = roomCode.trim().toUpperCase();
     const room = rooms.get(code);

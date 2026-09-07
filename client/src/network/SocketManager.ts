@@ -17,7 +17,7 @@ export class SocketManager {
     this.socket = io(SERVER_URL);
   }
 
-  createRoom(name: string) { this.socket.emit("createRoom", { name }); }
+  createRoom(name: string, roomCode: string) { this.socket.emit("createRoom", { name, roomCode }); }
   joinRoom(roomCode: string, name: string) { this.socket.emit("joinRoom", { roomCode, name }); }
 
   sendMovement(

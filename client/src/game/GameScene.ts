@@ -4,6 +4,7 @@ import { NPC } from "./NPC";
 import { Player } from "./Player";
 import { RooftopMap } from "./Map";
 import { SocketManager, NetworkPlayer } from "../network/SocketManager";
+import { DEFAULT_ROOM_CODE } from "./config";
 
 export class GameScene extends Phaser.Scene {
   player!: Player;
@@ -63,7 +64,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private setupNetworking() {
-    this.socketManager.socket.on("roomJoined", (data: { roomCode: string; player: NetworkPlayer; players: Record<string, NetworkPlayer> }) => {
+    this.socketManager.socket.on("roomJoined", (data: { roomCode: string; player: NetworkPlayer; players: Record<string, NetworkPlayer>; created: boolean }) => {
       this.roomCode = data.roomCode;
       this.ready = true;
       this.player = new Player(
@@ -193,7 +194,7 @@ export class GameScene extends Phaser.Scene {
 
   private showRoomFields() {
     const content = this.roomPanel.querySelector<HTMLDivElement>("#quiz-content")!;
-    content.innerHTML = `<div class="quiz-question">Okay, you're cleared for the rooftop.</div><div class="room-fields"><input id="player-name" placeholder="Your name" maxlength="20"><input id="room-code" placeholder="Room code to join" maxlength="5"><div class="room-actions"><button id="join-room" class="room-action">Join room</button><button id="create-room" class="room-action">Create room</button></div><span id="room-status">Enter a room code, or create a new room.</span></div>`;
+    content.innerHTML = `<div class="quiz-question">Okay, you're cleared for the rooftop.</div><div class="room-fields"><input id="player-name" placeholder="Your name" maxlength="20"><input id="room-code" value="${DEFAULT_ROOM_CODE}" placeholder="Room code to join" maxlength="12"><div class="room-actions"><button id="join-room" class="room-action">Join room</button><button id="create-room" class="room-action">Create room</button></div><span id="room-status">Your default room is ${DEFAULT_ROOM_CODE}.</span></div>`;
     const name = content.querySelector<HTMLInputElement>("#player-name")!;
     const roomCode = content.querySelector<HTMLInputElement>("#room-code")!;
     content.querySelector("#join-room")!.addEventListener("click", () => {
@@ -202,7 +203,7 @@ export class GameScene extends Phaser.Scene {
     });
     content.querySelector("#create-room")!.addEventListener("click", () => {
       this.playerName = name.value.trim() || "Dhruv";
-      this.socketManager.createRoom(this.playerName);
+      this.socketManager.createRoom(this.playerName, roomCode.value.trim() || DEFAULT_ROOM_CODE);
     });
   }
 
