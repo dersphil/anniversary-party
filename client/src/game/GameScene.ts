@@ -79,6 +79,7 @@ export class GameScene extends Phaser.Scene {
       this.updateRoomStatus(`ROOM ${this.roomCode}`);
       this.roomPanel.style.display = "none";
       this.chatInput.style.display = "block";
+      this.showRoomCodeBadge();
     });
     this.socketManager.socket.on("roomError", (message: string) => this.updateRoomStatus(message));
     this.socketManager.socket.on("playerJoined", (player: NetworkPlayer) => this.addOtherPlayer(player));
@@ -202,6 +203,42 @@ export class GameScene extends Phaser.Scene {
   private updateRoomStatus(message: string) {
     const status = document.querySelector<HTMLElement>("#room-status");
     if (status) status.textContent = message;
+  }
+
+  private showRoomCodeBadge() {
+    document.querySelector("#room-code-badge")?.remove();
+    const badge = document.createElement("div");
+    badge.id = "room-code-badge";
+    badge.innerHTML = `<span>ROOM CODE <strong>${this.roomCode}</strong></span><button type="button">Copy</button>`;
+    Object.assign(badge.style, {
+      position: "fixed",
+      top: "18px",
+      right: "18px",
+      display: "flex",
+      alignItems: "center",
+      gap: "10px",
+      padding: "10px 12px",
+      color: "#fff6fb",
+      background: "#241d40",
+      border: "2px solid #67e8e4",
+      font: "14px monospace",
+      zIndex: "5",
+    });
+    const button = badge.querySelector("button") as HTMLButtonElement;
+    Object.assign(button.style, {
+      cursor: "pointer",
+      padding: "6px 8px",
+      color: "#251d36",
+      background: "#67e8e4",
+      border: "0",
+      font: "12px monospace",
+    });
+    button.addEventListener("click", async () => {
+      await navigator.clipboard?.writeText(this.roomCode);
+      button.textContent = "Copied";
+      window.setTimeout(() => { button.textContent = "Copy"; }, 1500);
+    });
+    document.body.appendChild(badge);
   }
 
   private createChatUI() {
