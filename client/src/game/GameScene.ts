@@ -11,7 +11,7 @@ export class GameScene extends Phaser.Scene {
   socketManager!: SocketManager;
   private map!: RooftopMap;
   private readonly npcs: NPC[] = [];
-  private readonly otherPlayers = new Map<string, Phaser.GameObjects.Rectangle>();
+  private readonly otherPlayers = new Map<string, Phaser.GameObjects.Sprite>();
   private readonly bubbles = new Map<string, ChatBubble>();
   private roomCode = "";
   private ready = false;
@@ -107,8 +107,8 @@ export class GameScene extends Phaser.Scene {
 
   private addOtherPlayer(player: NetworkPlayer) {
     if (this.otherPlayers.has(player.id)) return;
-    const color = player.name.toLowerCase() === "dhruv" ? 0x4a6fa5 : 0xffd447;
-    const character = this.add.rectangle(player.x, player.y, 32, 45, color).setStrokeStyle(4, 0x47243b);
+    const texture = player.name.toLowerCase() === "dhruv" ? "player-dhruv" : "player-maria";
+    const character = this.add.sprite(player.x, player.y, texture).setDepth(10);
     this.otherPlayers.set(player.id, character);
   }
 
@@ -270,6 +270,11 @@ export class GameScene extends Phaser.Scene {
       if (event.key === "Enter" && input.value.trim() && this.ready) {
         this.socketManager.sendMessage(input.value.trim());
         input.value = "";
+      }
+    });
+    document.addEventListener("pointerdown", (event) => {
+      if (event.target instanceof Node && !input.contains(event.target)) {
+        input.blur();
       }
     });
   }
